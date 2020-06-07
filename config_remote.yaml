@@ -1,0 +1,27 @@
+restic:
+  repository: rest:http://localhost:33333/myrepo # don't forget to specify the reverse port here
+  password_file: /home/sammy/secrets/.rest_server_password
+
+
+healthchecks:
+  url: https://my-healthchecks-endpoint.com
+  token: /home/sammy/secrets/.healthchecks_token
+
+backup:
+  folders:
+    - /home/sammy/Videos
+    - /home/sammy/Music
+    - /home/sammy/Work
+    - /home/sammy/Documents
+  files:
+    - /etc/fstab
+    - /home/sammy/fileToBackup.txt
+
+remote:
+  server:
+    address: my-server-to-backup.com
+    port: 22 # which port to use to establish the SSH connection
+    reverse: 33333 # which port to use to establish the reverse connection
+  backup_server:
+    address: 192.168.10.10 # address of the server storing the backup
+    port: 9000

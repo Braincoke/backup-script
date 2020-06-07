@@ -49,6 +49,18 @@ if 'exclude_files' in backup:
   for f in backup['exclude_files']:
     exclude_list += ' --exclude="' + f + '"'
 
+# Special config for remote backups
+# using reverse SSH connections
+is_remote = 'remote' in config
+if is_remote:
+  # Basic config check
+  for section in ['server', 'backup_server']:
+    if section not in config['remote']:
+      sys.exit(error_message.substitute(section=section))
+  remote = config['remote']['server']
+  local = config['remote']['backup_server']
+
+
 # Ping start
 try:
   requests.get(check_url + "/start")
@@ -58,9 +70,12 @@ except requests.exceptions.RequestException:
   pass
 
 # Run the backup
-print(f"Backing up {include_list}")
-print(exclude_list)
-exit_code = os.system(f'/home/restic/bin/restic -r {restic_repo} -p {restic_password_file} backup {backup_list} {exclude_list}')
+print(f"Backing up: {include_list}")
+print(f"Excluding: {exclude_list}")
+backup_command = f'/home/restic/bin/restic -r {restic_repo} -p {restic_password_file} backup {include_list} {exclude_list}'
+if is_remote:
+  backup_command = f'ssh -p {remote["port"]} -R {remote["reverse"]}:{local["address"]}:{local["port"]} {remote["address"]} "{backup_command}"'
+exit_code = os.system(backup_command)
 
 # Ping fail
 if exit_code != 0:
