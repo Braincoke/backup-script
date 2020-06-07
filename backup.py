@@ -31,14 +31,23 @@ for section in ['healthchecks', 'restic', 'backup']:
 healthchecks = config['healthchecks']
 with open(healthchecks['token'], 'r') as tokenfile:
   check_token = tokenfile.readline().rstrip('\n').rstrip('\r')
-
 check_url = healthchecks['url'] + "/ping/" + check_token
 restic = config['restic']
 restic_repo = restic['repository']
 restic_password_file = restic['password_file']
-folders = config['backup']['folders']
-files = config['backup']['files']
-backup_list = ' '.join(folders) + ' ' + ' '.join(files)
+include_list = ''
+exclude_list = ''
+backup = config['backup']
+if 'folders' in backup:
+  include_list += ' '.join(backup['folders']) + ' '
+if 'files' in backup:
+  include_list += ' '.join(backup['files']) + ' '
+if 'exclude_folders' in backup:
+  for f in backup['exclude_folders']:
+    exclude_list += ' --exclude="' + f + '"'
+if 'exclude_files' in backup:
+  for f in backup['exclude_files']:
+    exclude_list += ' --exclude="' + f + '"'
 
 # Ping start
 try:
@@ -49,8 +58,9 @@ except requests.exceptions.RequestException:
   pass
 
 # Run the backup
-print(f"Backing up {backup_list}")
-exit_code = os.system(f'/home/restic/bin/restic -r {restic_repo} -p {restic_password_file} backup {backup_list}')
+print(f"Backing up {include_list}")
+print(exclude_list)
+exit_code = os.system(f'/home/restic/bin/restic -r {restic_repo} -p {restic_password_file} backup {backup_list} {exclude_list}')
 
 # Ping fail
 if exit_code != 0:

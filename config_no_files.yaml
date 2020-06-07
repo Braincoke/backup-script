@@ -1,0 +1,16 @@
+restic:
+  repository: rest:http://192.168.10.10:9000/myrepo
+  password_file: /home/sammy/secrets/.rest_server_password
+
+
+healthchecks:
+  url: https://my-healthchecks-endpoint.com
+  token: /home/sammy/secrets/.healthchecks_token
+
+backup:
+  folders:
+    - /home/sammy/Videos
+    - /home/sammy/Music
+    - /home/sammy/Work
+    - /home/sammy/Documents
+
