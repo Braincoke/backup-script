@@ -22,6 +22,7 @@ remote:
     address: my-server-to-backup.com
     port: 22 # which port to use to establish the SSH connection
     reverse: 33333 # which port to use to establish the reverse connection
+    user: myuser
   backup_server:
     address: 192.168.10.10 # address of the server storing the backup
     port: 9000

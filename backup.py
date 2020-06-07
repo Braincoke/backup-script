@@ -74,7 +74,7 @@ print(f"Backing up: {include_list}")
 print(f"Excluding: {exclude_list}")
 backup_command = f'/home/restic/bin/restic -r {restic_repo} -p {restic_password_file} backup {include_list} {exclude_list}'
 if is_remote:
-  backup_command = f'ssh -p {remote["port"]} -R {remote["reverse"]}:{local["address"]}:{local["port"]} {remote["address"]} "{backup_command}"'
+  backup_command = f'ssh -p {remote["port"]} -R {remote["reverse"]}:{local["address"]}:{local["port"]} {remote["user"]}@{remote["address"]} "{backup_command}"'
 exit_code = os.system(backup_command)
 
 # Ping fail
